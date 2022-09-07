@@ -36,6 +36,7 @@
 	6.   Differential expression analysis with DESeq
 	7.   GO Enrichment of Differentially Expressed Genes
 3.   More advanced processing (Time permitting)
+
 	1.   Creating heatmaps in R with ComplexHeatmap
 	2.   Working with python programs within a conda environment
 	3.   More advanced differential expression analysis with model building
