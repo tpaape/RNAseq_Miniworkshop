@@ -133,7 +133,7 @@
 - Export samtools to your path
 		export PATH=$PATH:/directory/samtools-0.1.19
 
-## Install HTseq ##
+## Install HTseq and other count processing tools ##
 - If not already activated, activate the py3.7 environment
 		conda activate py3.7
 - Install HTseq

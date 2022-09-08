@@ -136,7 +136,7 @@
        
     	for f in $(ls *1_001.fastq.gz | sed 's/1_001.fastq.gz//' | sort -u)
     	do
-    	java -jar ~/ptmp/StickingTransJune19/AspergillusLaneA/Trimmomatic-0.36/trimmomatic-0.36.jar PE -phred33 ${f}1_001.fastq.gz ${f}2_001.fastq.gz  ${f}1_paired.fq.gz ${f}1_unpaired.fq.gz ${f}2_paired.fq.gz ${f}2_unpaired.fq.gz ILLUMINACLIP:TruSeq3-PE.fa:2:30:10:2:True LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+    	java -jar ~/Trimmomatic-0.36/trimmomatic-0.36.jar PE -phred33 ${f}1_001.fastq.gz ${f}2_001.fastq.gz  ${f}1_paired.fq.gz ${f}1_unpaired.fq.gz ${f}2_paired.fq.gz ${f}2_unpaired.fq.gz ILLUMINACLIP:TruSeq3-PE.fa:2:30:10:2:True LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
     	done
 
 ### Running FastQC and MultiQC on the trimmed and cleaned files ###
@@ -160,7 +160,7 @@
 
 		for f in $(ls *noadapt.fq | sed 's/noadapt.fq//')
 		do
-		~/ptmp/FastQC/fastqc -t 4 -o FastQC_Trimmed_Output ${f}noadapt.fq
+		~/FastQC/fastqc -t 4 -o FastQC_Trimmed_Output ${f}noadapt.fq
 		done
 - Press cmd + x
 - Press `y`
