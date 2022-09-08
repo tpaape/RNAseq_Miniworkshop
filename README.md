@@ -8,11 +8,12 @@
 2.  Introduction to RNAseq processing (Brief Overview)
 3.  Introduction to linux and bash scripting (First half of powerpoint)
 4.  Extract assigned reads for processing
-5.  Start processing RNAseq data (Step 1 of )
+5.  Start processing RNAseq data (Step 1 of  3)
 	1.  FastQC of Raw Reads
 	2.  Run trimmomatic to remove adapters and trim for quality
+	3.  Create STAR genome indices
 6.  Introduction to linux and bash scripting (Second half of power point)
-7.  Continue processing RNAseq data (Step 2 of )
+7.  Continue processing RNAseq data (Step 2 of 3)
 	1.  FastQC trimmed and cleaned reads
 	2.  Run STAR alignment on cleaned reads
 8. Finish RNAseq processing powerpoint
@@ -26,7 +27,7 @@
 
 ### Friday 9/8/22 ###
 1.   Introduction to RNAseq count processing
-2.   Continue processing RNAseq data with bash and R (Step 3 of )
+2.   Continue processing RNAseq data with bash and R (Step 3 of 3)
 	1.   Aggregate count summary data
 	2.   Aggregate count files 
 	3.   Count filtering and Normalization in R
