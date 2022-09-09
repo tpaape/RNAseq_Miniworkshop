@@ -114,7 +114,7 @@
 	- Transfer the .rpm file to your instance. In your new terminal window use the following command
 		 	scp -i "AWS_key.pem" ~/Downloads/crowdstrike_rhel9.rpm centos@ec2-34-227-60-128.compute-1.amazonaws.com:/home/centos/
 - To install the downloaded package
-		sudo yum install -y crowdstrike_rehl9.rpm
+		sudo yum install -y crowdstrike_rhel9.rpm
 - To activate the Crowdstrike license, copy the customer id from the following link:
 - [https://bitwarden.itd.bnl.gov/#/send/QQnq4C0o4U6-Rq8AAS5IKg/NXfWv6lohf6rhRBSiiuEOw](https://bitwarden.itd.bnl.gov/#/send/QQnq4C0o4U6-Rq8AAS5IKg/NXfWv6lohf6rhRBSiiuEOw)
 		sudo /opt/CrowdStrike/falconctl -s --cid=BAEDD79F134B412F9048B04C3705D12F-05
