@@ -1,0 +1,17 @@
+#Initial QC run     
+#!/bin/bash
+#PBS -N split
+#PBS -l ncpus=16
+#PBS -l mem=32gb
+#PBS -m ae
+#PBS -M mclear.go.olemiss.edu
+
+source activate py3.7
+    
+cd $PBS_O_WORKDIR
+for f in $(ls *fastq.gz)
+do
+zcat ${f} | reformat.sh in=${f} out1=${f}_R1.fastq out2=${f}_R2.fastq 
+done 
+
+gzip *.fastq

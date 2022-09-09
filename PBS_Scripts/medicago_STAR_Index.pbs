@@ -1,0 +1,19 @@
+#STAR medicagoIndex.pbs
+#!/bin/bash
+#PBS -N medicago_Index
+#PBS -l ncpus=8
+#PBS -l mem=64gb
+#PBS -m ae
+#PBS -M abhat@bnl.gov
+
+cd $PBS_O_WORKDIR
+
+mkdir Mtrunc_Indexed
+
+~/STAR-2.7.10a/bin/Linux_x86_64_static/STAR --runMode genomeGenerate \
+--genomeDir ~/Genomes_Indexed/Mtrunc_Indexed \
+--genomeFastaFiles ~/Genomes/Mtrunc_v5/mtruna17r5.0-20161119-anr.genome.fasta \
+--sjdbGTFfile ~/Genomes/Mtrunc_v5/MtrunA17r5.0-ANR-EGN-r1.8.gff3 \
+--sjdbOverhang 100 \
+--genomeSAindexNbases 13 \
+--runThreadN 8

@@ -1,0 +1,20 @@
+#Initial QC run     
+#!/bin/bash
+#PBS -N QC_RAWdata_Aditi
+#PBS -l ncpus=4
+#PBS -l mem=8gb
+#PBS -m ae
+#PBS -M abhat@bnl.gov
+    
+
+workdir = "insert/the/path/to/your/files/here"
+outputdir = "insert name of output directory here"
+
+cd $workdir
+
+mkdir $outputdir
+
+for f in $(ls *_paired.fq.gz)
+do
+zcat ${f} | ~/FastQC/fastqc -t 4 -o FastQC_Raw_Output ${f}
+done 

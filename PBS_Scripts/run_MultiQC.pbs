@@ -1,0 +1,13 @@
+#Code for MultiQC.pbs
+#!/bin/bash
+#PBS -N MultiQC
+#PBS -l ncpus=4
+#PBS -l mem=8gb
+#PBS -m ae
+#PBS -M tpaape@bnl.gov
+
+cd $PBS_O_WORKDIR
+
+source activate py3.7
+
+multiqc .

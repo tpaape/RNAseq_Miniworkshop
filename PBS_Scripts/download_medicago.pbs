@@ -1,0 +1,12 @@
+#Download JGI files 
+#!/bin/bash
+#PBS -N download_JGI
+#PBS -l ncpus=16
+#PBS -l mem=32gb
+#PBS -m ae
+#PBS -M mclear@bnl.go
+		    
+cd $PBS_O_WORKDIR
+
+curl -b cookies https://genome.jgi.doe.gov/portal/ext-api/downloads/bulk/30320-7/zip > medicago.zip
+
