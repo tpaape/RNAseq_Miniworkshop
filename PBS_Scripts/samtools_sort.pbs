@@ -1,0 +1,19 @@
+#SAMsort.pbs
+#!/bin/bash
+#PBS -N SAM_SORT
+#PBS -l ncpus=4
+#PBS -l mem=8gb
+#PBS -m ae
+#PBS -M mclear.go.olemiss.edu
+
+workdir = "insert/the/path/to/your/files/here"
+
+cd $workdir
+
+export PATH=/usr/local/bin/:$PATH
+
+for i in $(ls *Aligned.out.bam | sed 's/.bam//')
+do
+samtools sort ${i}.bam  -n -o \
+${i}.sorted.bam
+done

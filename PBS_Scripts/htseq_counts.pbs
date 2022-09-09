@@ -1,0 +1,19 @@
+#HTSeq.pbs
+#!/bin/bash
+#PBS -N HTSeq
+#PBS -l ncpus=4
+#PBS -l mem=8gb
+#PBS -m ae
+#PBS -M mclear.go.olemiss.edu
+
+workdir = "insert/the/path/to/your/files/here"
+genomeDir = "insert/the/path/to/genome/annotation/gff/gtf"
+
+cd $workdir
+
+source activate py3.7
+
+for i in $(ls *.sorted.bam | sed 's/.sorted.bam//')
+do
+htseq-count -s no -t CDS -f bam ${i}.sorted.bam ${genomeDir} > ${i}.counts
+done
