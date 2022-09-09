@@ -10,9 +10,9 @@
 workdir = "insert/the/path/to/your/files/here"
 outputdir = "insert name of output directory here"
 
-cd $workdir
+cd ${workdir}
 
-mkdir $outputdir
+mkdir ${outputdir}
 
 for f in $(ls *_paired.fq.gz)
 do

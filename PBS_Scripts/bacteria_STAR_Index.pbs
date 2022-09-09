@@ -6,14 +6,15 @@
 #PBS -m ae
 #PBS -M abhat@bnl.gov
 
-outputdir = "insert path to new output directory here"
+outputdir = "insert name of output directory here"
 
 mkdir ${outputdir}
 
 ~/STAR-2.7.10a/bin/Linux_x86_64_static/STAR --runMode genomeGenerate \
 --genomeDir ${outputdir} \
---genomeFastaFiles ~/Genomes/Mtrunc_v5/mtruna17r5.0-20161119-anr.genome.fasta \
---sjdbGTFfile ~/Genomes/Mtrunc_v5/MtrunA17r5.0-ANR-EGN-r1.8.gff3 \
+--genomeFastaFiles ~/Genomes/VTc07/Vtc07_genome_trd.fasta \
+--sjdbGTFfile ~/Genomes/VTc07/Vtc07.436.gff \
 --sjdbOverhang 100 \
---genomeSAindexNbases 13 \
+--genomeSAindexNbases 10 \
+--sjdbGTFfeatureExon CDS \
 --runThreadN 8
