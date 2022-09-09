@@ -1,7 +1,6 @@
 library(DESeq2)
 library(pheatmap)
 
-
 #Processing Count Data RNAseq Miniworkshop
 #setwd("~/full_data/deseq2")
 
