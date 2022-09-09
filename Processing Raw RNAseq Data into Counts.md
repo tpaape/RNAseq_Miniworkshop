@@ -284,8 +284,6 @@
 		do
 		htseq-count -s no -t exon -f bam ${i}.sorted.bam ~/Genomes/ASP_CHLAM_ANNOTATION.gtf > ${i}.counts
 		done
-### Aggregate all of the count files with bash ###
-- Create a new text file to run a bash command to aggregate the count files
 
 
 ### Aggregating a count summary file with bash ###

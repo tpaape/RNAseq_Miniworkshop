@@ -8,7 +8,7 @@
     
 workdir = "insert/the/path/to/your/files/here"
 
-cd $workdir
+cd ${workdir}
        
 for f in $(ls *1_001.fastq.gz | sed 's/1_001.fastq.gz//' | sort -u)
 do

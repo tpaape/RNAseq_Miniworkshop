@@ -8,7 +8,7 @@
     
 
 workdir = "insert/the/path/to/your/files/here"
-outputdir = "insert name of output directory here"
+outputdir = "insert name/path of output directory here"
 
 cd ${workdir}
 
