@@ -2,10 +2,10 @@ rawCounts_toTMM <- function(counts, metadata, treatment_Column) {
   library(edgeR)
   library(stringr)
   #Import count data. Assumes the first column contains the gene identifier
-  countData <- read.csv(counts, row.names=1)
+  countData <- read.csv(counts, row.names=1, sep='\t')
   
   #Import metadata. Assumes the first column contains the sample identifier
-  metaData <- read.csv(metadata)
+  metaData <- read.csv(metadata, sep='\t')
   
   metaData$Name <- paste('X', metaData$Name, sep='')
   
@@ -40,9 +40,9 @@ rawCounts_toTMM <- function(counts, metadata, treatment_Column) {
 
 
 #Example usage  
-rawCounts_toTMM(counts="C:/Users/mclea/OneDrive/Brookhaven/RNAseq/Time_Series/Sorghum/Raw Output/20400Tim-raw_genes_counts_INT_both_outliers_removed.csv", 
-                metadata="C:/Users/mclea/OneDrive/Brookhaven/RNAseq/Time_Series/Sorg_Metadata.csv", 
-                treatment_Column="TissueXTrtXTime")
+rawCounts_toTMM(counts='13320077-counts.txt', 
+                metadata='test_metadata.txt', 
+                treatment_Column="Treatment")
 
 rawCounts_toTMM(counts="C:/Users/mclea/OneDrive/Brookhaven/RNAseq/Time_Series/Poplar/Raw Output/20400Tim-raw_genes_counts_INT_both_outliers_removed.csv", 
                 metadata="C:/Users/mclea/OneDrive/Brookhaven/RNAseq/Time_Series/All_metadata_pop_noOutliers.csv", 
