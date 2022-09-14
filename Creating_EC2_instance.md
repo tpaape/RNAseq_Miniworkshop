@@ -52,7 +52,7 @@
 - You should see a screen that looks like this:
 <img src="Figures/check_new_instance.png" height="200">
 
-	- Ensure that the instance you created says **Running** under **Instance state** and that the status check says **2/2 checks passed**
+- Ensure that the instance you created says **Running** under **Instance state** and that the status check says **2/2 checks passed**
 - Expand the **Advanced details** menu at the bottom of the screen
 <img src="Figures/advanced_tab.png" height="400">
 
@@ -94,8 +94,10 @@
 - Once downloaded and installed, press the session button in the top, left corner. This will open a separate connection wizard window
 - Press the SSH Icon in the top, left corner of the new window
 <img src="Figures/create_new_mobax.png" height="300">
+
 - Copy the Public IPv4 ip address from your instance. This is found on your EC2 dashboard
 <img src="Figures/get_public_ip.png" height="200">
+
 - Paste the IP address in the Remote host box in the MobaXterm window
 - Press the Advanced SSH settings tab
 - Check the Use private key box
