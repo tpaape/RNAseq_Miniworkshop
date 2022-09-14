@@ -78,13 +78,15 @@
 
 	- Note: in this example, it will be in my Documents directory
 - Change the file permission of your key pair name file so that it is not publicly viewable
-		chmod 400 AWS_key.pem
+
+      chmod 400 AWS_key.pem
 
 - Use the following command as a template to SSH into your instance:
 	- Note that you will need to change the key name: "AWS_key.pem" to reflect the name of the key you created and you will also need to copy instance Public DNS from your EC2 login information obtained
 	- You should be able to simply copy the example from the EC2 connect window we opened previously on a separate tab
 
-			ssh -i "AWS_key.pem" centos@ec2-34-227-60-128.compute-1.amazonaws.com
+      ssh -i "AWS_key.pem" centos@ec2-34-227-60-128.compute-1.amazonaws.com
+
 - You may be prompted that the host key is not cached for this server. This is fine, you can accept this warning and continue logging into the instance
 
 ## SSH into your instance (PC)
@@ -125,122 +127,148 @@
 ## (OPTIONAL) Expand storage for instances that are >2 TB ##
 - Note: this is required if your instance is >2 TB, otherwise you will not be able to use all of the storage that you allotted to your instance
 - Check to see how your hard drive is partitioned by running the following command:
-		lsblk
+      lsblk
 
 - You should see something that looks similar to this:
 
-		[centos@ip-172-31-87-133 ~]$ lsblk
-		NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-		xvda    202:0    0  3.9T  0 disk
-		└─xvda1 202:1    0    2T  0 part /
+      [centos@ip-172-31-87-133 ~]$ lsblk
+      NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+      xvda    202:0    0  3.9T  0 disk
+      └─xvda1 202:1    0    2T  0 part /
 
 - Notice that you have 4 TB of total space but only 2 TB are allocated to the root partition, "xvda1"
 - You will need to make a note of the disk and partition to use in later steps in our case:
 	- Disk: "xvda"
 	- Partition: "xvda1"
 - Use the gdisk tool to change the partition table
-		sudo gdisk /dev/xvda
+
+      sudo gdisk /dev/xvda
 
 - You will see something similar to the following:
-		[centos@ip-172-31-87-133 ~]$ sudo gdisk /dev/xvda
-		GPT fdisk (gdisk) version 0.8.10
 
-		Partition table scan:
-		MBR: MBR only
- 		BSD: not present
-  		APM: not present
-  		GPT: not present
+      [centos@ip-172-31-87-133 ~]$ sudo gdisk /dev/xvda
+      GPT fdisk (gdisk) version 0.8.10
 
-		***************************************************************
-		Found invalid GPT and valid MBR; converting MBR to GPT format
-		in memory. THIS OPERATION IS POTENTIALLY DESTRUCTIVE! Exit by
-		typing 'q' if you don't want to convert your MBR partitions
-		to GPT format!
-		***************************************************************
+      Partition table scan:
+      MBR: MBR only
+      BSD: not present
+      APM: not present
+      GPT: not present
 
-		Command (? for help):
+      ***************************************************************
+      Found invalid GPT and valid MBR; converting MBR to GPT format
+      in memory. THIS OPERATION IS POTENTIALLY DESTRUCTIVE! Exit by
+      typing 'q' if you don't want to convert your MBR partitions
+      to GPT format!
+      ***************************************************************
+
+      Command (? for help):
 
 - Enter the following commands to create a GPT partition:
-		Command (? for help): n                                                                                                        
-		Partition number (2-128, default 2): 128                                                                               
-		First sector (34-6291455966, default = 4294967296) or {+-}size{KMGTP}: 34                     
-		Last sector (34-2047, default = 2047) or {+-}size{KMGTP}:                                                  
-		Current type is 'Linux filesystem'
-		Hex code or GUID (L to show codes, Enter = 8300): ef02                                                     
-		Changed type of partition to 'BIOS boot partition'
+
+      Command (? for help): n                                                                                                        
+      Partition number (2-128, default 2): 128                                                                               
+      First sector (34-6291455966, default = 4294967296) or {+-}size{KMGTP}: 34                     
+      Last sector (34-2047, default = 2047) or {+-}size{KMGTP}:                                                  
+      Current type is 'Linux filesystem'
+      Hex code or GUID (L to show codes, Enter = 8300): ef02                                                     
+      Changed type of partition to 'BIOS boot partition'
 
 - Enter the following commands to delete the root partition:
-		Command (? for help): d                                                                                                         
-		Partition number (1-128): 1
+
+      Command (? for help): d                                                                                                         
+      Partition number (1-128): 1
 
 - Enter the following commands to recreate the root partition:
-		Command (? for help): n                                                                                                         
-		Partition number (1-128, default 1): 1                                                                                     
-		First sector (2048-6291455966, default = 2048) or {+-}size{KMGTP}:                                  
-		Last sector (2048-6291455966, default = 6291455966) or {+-}size{KMGTP}:                       
-		Current type is 'Linux filesystem'
-		Hex code or GUID (L to show codes, Enter = 8300):                                                             
-		Changed type of partition to 'Linux filesystem'
+
+      Command (? for help): n                                                                                                         
+      Partition number (1-128, default 1): 1                                                                                     
+      First sector (2048-6291455966, default = 2048) or {+-}size{KMGTP}:                                  
+      Last sector (2048-6291455966, default = 6291455966) or {+-}size{KMGTP}:                       
+      Current type is 'Linux filesystem'
+      Hex code or GUID (L to show codes, Enter = 8300):                                                             
+      Changed type of partition to 'Linux filesystem'
 
 - Enter the following commands to save the GPT partition table:
-		Command (? for help): w                                                                                                        
-		Final checks complete. About to write GPT data. THIS WILL OVERWRITE EXISTING
-		PARTITIONS!!
-		Do you want to proceed? (Y/N): y                                                                                          
-		OK; writing new GUID partition table (GPT) to /dev/xvda.
-		The operation has completed successfully.
+
+      Command (? for help): w                                                                                                        
+      Final checks complete. About to write GPT data. THIS WILL OVERWRITE EXISTING
+      PARTITIONS!!
+      Do you want to proceed? (Y/N): y                                                                                          
+      OK; writing new GUID partition table (GPT) to /dev/xvda.
+      The operation has completed successfully.
 
 - Expand the file system
-		sudo mount -o nouuid /dev/xvda1 /mnt
-		sudo xfs_growfs /dev/xvda1
+
+      sudo mount -o nouuid /dev/xvda1 /mnt
+      sudo xfs_growfs /dev/xvda1
 
 - Run the following commands **(Note: Run commands 1 by 1 to avoid mistakes!)**:
-		sudo mount --bind /proc /mnt/proc
-		sudo mount --bind /sys /mnt/sys
-		sudo mount --bind /dev /mnt/dev
-		sudo chroot /mnt /bin/bash
-		grub2-install /dev/xvda
-		exit
-		sudo umount -l /mnt/dev
-		sudo umount -l /mnt/sys
-		sudo umount -l /mnt/proc
-		sudo umount -l /mnt
+
+      sudo mount --bind /proc /mnt/proc
+      sudo mount --bind /sys /mnt/sys
+      sudo mount --bind /dev /mnt/dev
+      sudo chroot /mnt /bin/bash
+      grub2-install /dev/xvda
+      exit
+      sudo umount -l /mnt/dev
+      sudo umount -l /mnt/sys
+      sudo umount -l /mnt/proc
+      sudo umount -l /mnt
 
 - Using the AWS EC2 page on your browser, stop your instance
 - Once your instance as stopped, start it again
 - SSH into your instance. **Note: it will have a new IP address!**
 - Run the following command to check that the full volume has been utilized:
-		lsblk
+
+      lsblk
 
 - It should look something like this:
-		$ lsblk
-		NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
-		xvda    202:0    0   4T  0 disk 
-		└─xvda1 202:1    0   4T  0 part /
+
+      $ lsblk
+      NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+      xvda    202:0    0   4T  0 disk 
+      └─xvda1 202:1    0   4T  0 part /
 
 ## Install required packages
 - Crowdstrike must be installed on all instances. This is a BNL requirement. 
 - To install Crowdstrike on CentOS7
 - install wget and nano
-		sudo yum install -y wget nano
+
+      sudo yum install -y wget nano
+
 - On your local machine, download the latest Crowdstrike .rpm file from [https://mirror.bnl.gov/software/cyber/Crowdstrike/RHEL/](https://mirror.bnl.gov/software/cyber/Crowdstrike/RHEL/)
 	- You must be on the VPN for this link to work
 - For this exercise, we will download **crowdstrike_rhel9.rpm** onto our local machine
 - Open up a new terminal window on your machine
 - Navigate to the directory where your .pem file is located
-		cd Documents
+
+      cd Documents
+
 	- Transfer the .rpm file to your instance. In your new terminal window use the following command
-		 	scp -i "AWS_key.pem" ~/Downloads/crowdstrike_rhel9.rpm centos@ec2-34-227-60-128.compute-1.amazonaws.com:/home/centos/
+
+          scp -i "AWS_key.pem" ~/Downloads/crowdstrike_rhel9.rpm centos@ec2-34-227-60-128.compute-1.amazonaws.com:/home/centos/
+
 - To install the downloaded package
-		sudo yum install -y crowdstrike_rhel9.rpm
+      sudo yum install -y crowdstrike_rhel9.rpm
+
 - To activate the Crowdstrike license, copy the customer id from the following link:
 - [https://bitwarden.itd.bnl.gov/#/send/QQnq4C0o4U6-Rq8AAS5IKg/NXfWv6lohf6rhRBSiiuEOw](https://bitwarden.itd.bnl.gov/#/send/QQnq4C0o4U6-Rq8AAS5IKg/NXfWv6lohf6rhRBSiiuEOw)
-		sudo /opt/CrowdStrike/falconctl -s --cid=BAEDD79F134B412F9048B04C3705D12F-05
+
+      sudo /opt/CrowdStrike/falconctl -s --cid=BAEDD79F134B412F9048B04C3705D12F-05
+
 - Start the service
-		sudo service falcon-sensor start
+
+      sudo service falcon-sensor start
+
 - Enable the service at boot
-		sudo systemctl start falcon-sensor
+
+      sudo systemctl start falcon-sensor
+
 - To confirm the sensor is running, run the following command
-		ps -e | grep falcon-sensor
+
+      ps -e | grep falcon-sensor
+
 - You should see an output like this:
-		16242 ?        00:00:05 falcon-sensor
+
+      16242 ?        00:00:05 falcon-sensor
