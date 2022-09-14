@@ -56,8 +56,8 @@
 - Expand the **Advanced details** menu at the bottom of the screen
 <img src="Figures/advanced_tab.png" height="400">
 
-- Under **IAM instance profile **change the dropdown menu to **s3Admin**
-- Under **Detailed CloudWatch monitoring ** change the dropdown menu to **enable**
+- Under **IAM instance profile** change the dropdown menu to **s3Admin**
+- Under **Detailed CloudWatch monitoring** change the dropdown menu to **enable**
 <img src="Figures/advanced_options.png" height="400">
 
 ## SSH into your instance (Mac)
@@ -73,7 +73,8 @@
 - Go to your Downloads directory and move the key pair name file you created when making your EC2 instance to a permanent directory where you can easily find it
 	- Note: in this example, we named our key pair name "AWS_key.pem" and place it in the Documents directory
 - Navigate into the directory that contains your key pair name
-		cd Documents
+
+	cd Documents
 
 	- Note: in this example, it will be in my Documents directory
 - Change the file permission of your key pair name file so that it is not publicly viewable
