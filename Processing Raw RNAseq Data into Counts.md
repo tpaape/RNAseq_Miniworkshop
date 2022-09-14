@@ -337,6 +337,11 @@
       --sjdbGTFtagExonParentGene ID \
       --runThreadN 8
 
+- Close and save the file
+- To generate the index file run
+
+      qsub rhizobia_STAR_index.pbs
+
 ### Concatenating genomes (optional) ###
 ### Mapping reads to indexed reference genome ###
 - Create a new pbs file for mapping the Medicago reads to the indexed genome file
@@ -345,166 +350,199 @@
 
 - Copy and paste the following into the empty text file, make sure you change the email!
 
-		#STAR.pbs
-		#!/bin/bash
-		#PBS -N STAR_medicago
-		#PBS -l ncpus=8
-		#PBS -l mem=32gb
-		#PBS -m ae
-		#PBS -M mclear.go.olemiss.edu
+      #STAR.pbs
+      #!/bin/bash
+      #PBS -N STAR_align
+      #PBS -l ncpus=8
+      #PBS -l mem=32gb
+      #PBS -m ae
+      #PBS -M mclear@bnl.gov
 
-		cd $PBS_O_WORKDIR
+      cd $PBS_O_WORKDIR
 
-		for i in $(ls *R1_sickled-noadapt.fq.gz | sed 's/R1_sickled-noadapt.fq.gz//')
-		do
-		~/STAR-2.7.10a/bin/Linux_x86_64_static/STAR --runMode alignReads \
-		--readFilesCommand zcat \
-		--outSAMtype BAM Unsorted \
-		--genomeDir ~/Medicago/M_truncV5 \
-		--readFilesIn ${i}R1_sickled-noadapt.fq ${i}R2_sickled-noadapt.fq.gz \
-		--outReadsUnmapped Fastx \
-		--runThreadN 8 \
-		--quantMode GeneCounts \
-		--outFileNamePrefix ${i}Mtrunc \
-		--alignIntronMax 3000
-		done
+      for i in $(ls *R1_paired.fq.gz | sed 's/R1_paired.fq.gz//')
+      do
+      STAR --runMode alignReads \
+      --readFilesCommand zcat \
+      --outSAMtype BAM Unsorted \
+      --genomeDir ~/Genomes_Indexed/STf07_Indexed \
+      --readFilesIn ${i}R1_paired.fq.gz  ${i}R2_paired.fq.gz \
+      --outReadsUnmapped Fastx \
+      --runThreadN 8 \
+      --quantMode GeneCounts \
+      -–sjdbGTFfile ~/Genomes/STf07/Stf07_491978.gff \
+      --sjdbGTFfeatureExon CDS \
+      --sjdbGTFtagExonParentGene ID \
+      --outFileNamePrefix ${i}STf07 \
+      --alignIntronMax 3000
+      done
 
+- Close and save the file
 - To run the STAR mapping script
 
-		qsub STAR_map_medicago.pbs
+      qsub STAR_map_medicago.pbs
 
 ## Creating count files from STAR output (*.bam) files ##
 ### Sorting *.bam files with samtools ###
 - Open a new text file for a samsort .pbs script
 
-		nano samSort.pbs
+      nano samSort.pbs
 
 - Copy and paste the following into the empty text file, makes sure you change the email!
 
-		#SAMsort.pbs
-		#!/bin/bash
-		#PBS -N SAM_SORT
-		#PBS -l ncpus=4
-		#PBS -l mem=8gb
-		#PBS -m ae
-		#PBS -M mclear.go.olemiss.edu
+      #SAMsort.pbs
+      #!/bin/bash
+      #PBS -N SAM_SORT
+      #PBS -l ncpus=4
+      #PBS -l mem=8gb
+      #PBS -m ae
+      #PBS -M mclear@bnl.gov
 
-		cd $PBS_O_WORKDIR
+      cd $PBS_O_WORKDIR
 
-		for i in $(ls *MtruncAligned.out.bam | sed 's/.bam//')
-		do
-		/usr/local/apps/sam/samtools-1.6/bin/samtools sort ${i}.bam  -n -o \
-		${i}.sorted.bam
-		done
+      for i in $(ls *Aligned.out.bam | sed 's/.bam//')
+      do
+      samtools sort ${i}.bam  -n -o \
+      ${i}.sorted.bam
+      done
 
-- Run the samsort pbs file
+- Close and save the file
+- To run the samsort pbs file:
 
-		qsub samSort.pbs
+      qsub samSort.pbs
 
 ### Creating count files with HTseq ###
+- Open a new file called htseq_counts.pbs
 
-		#HTSeq.pbs
-		#!/bin/bash
-		#PBS -N HTSeq
-		#PBS -l ncpus=4
-		#PBS -l mem=8gb
-		#PBS -m ae
-		#PBS -M mclear.go.olemiss.edu
+      sudo nano htseq_counts.pbs
 
-		cd $PBS_O_WORKDIR
+- Copy and paste the following into the blank file
 
-		module load py3.7
+      #HTSeq.pbs
+      #!/bin/bash
+      #PBS -N HTSeq
+      #PBS -l ncpus=4
+      #PBS -l mem=8gb
+      #PBS -m ae
+      #PBS -M mclear@bnl.gov
 
-		for i in $(ls *.sorted.bam | sed 's/.sorted.bam//')
-		do
-		htseq-count -s no -t exon -f bam ${i}.sorted.bam ~/Genomes/ASP_CHLAM_ANNOTATION.gtf > ${i}.counts
-		done
+      cd $PBS_O_WORKDIR
 
+      source activate py3.7
+
+      for i in $(ls *.sorted.bam | sed 's/.sorted.bam//')
+      do
+      htseq-count -s no -t CDS -f bam -i ID ${i}.sorted.bam /home/centos/Genomes/VTc07/Vtc07.436.gff > ${i}.counts
+      done
+
+- Close and save the file
+- To run the htseq_couts file:
+
+      qsub htseq_counts.pbs
 
 ### Aggregating a count summary file with bash ###
 - Create a new text file to run a bash command to aggregate the STAR log files
 
-		nano agg_STAR_log.sh
+      nano agg_STAR_log.sh
 
 - Copy and paste the following into the empty text file
 
-		for i in $(grep -l 'Uniquely mapped reads number' *Log.final.out); do 
-			export percent=$(sed -n '/Uniquely mapped reads %/p' $i |cut -f2)
-			export num=$(sed -n '/Uniquely mapped reads number/p' $i| cut -f2)
-			export file=$(paste <(echo "$i") <(echo "$num") <(echo "$percent"))
-			echo "$file" >> compiled_STAR_stats.txt
-		done
+      for i in $(grep -l 'Uniquely mapped reads number' *Log.final.out); do 
+      export percent=$(sed -n '/Uniquely mapped reads %/p' $i |cut -f2)
+      export num=$(sed -n '/Uniquely mapped reads number/p' $i| cut -f2)
+      export file=$(paste <(echo "$i") <(echo "$num") <(echo "$percent"))
+      echo "$file" >> compiled_STAR_stats.txt
+      done
 
 - Save and close the file
 - Make the bash script executable
 
-		chmod u+x agg_STAR_log.sh
+      chmod u+x agg_STAR_log.sh
 
 -While in the directory where all of the STAR output files are located run the bash script
 
-		`./agg_STAR_log.sh`
+      ./agg_STAR_log.sh
 
 ### Aggregate the count files with Python script ###
 - Open a new text file to aggregate counts
 
-		nano aggregate_counts.py
+       nano aggregate_counts.py
 
 - In the empty text document, copy and paste the following code
 
-		import glob
-		import pandas as pd
+      import glob
+      import pandas as pd
 		
-		#Creates a list of filenames from files in the working directory that end in .csv
-		filenames = glob.glob('*.counts')
+      #Creates a list of filenames from files in the working directory that end in .csv
+      filenames = glob.glob('*.counts')
 		
-		#creates a list of dataframes from the working directoryo
-		dfs = [pd.read_csv(filename, names = ['Gene', filename], sep='\t') for filename in filenames]
+      #creates a list of dataframes from the working directoryo
+      dfs = [pd.read_csv(filename, names = ['Gene', filename], sep='\t') for filename in filenames]
 		
-		#Combines all dataframes into one
-		combinedDF = pd.concat(dfs, axis=1)
-		#Drops duplicate gene columns that are remnants from the concat function
-		#This works by transposing the dataframe, dropping duplicates, then re-transposing
-		combinedDF = combinedDF.T.drop_duplicates().T
-		#Sets the index to the gene column
-		combinedDF = combinedDF.set_index('Gene')
+      #Combines all dataframes into one
+      combinedDF = pd.concat(dfs, axis=1)
+      #Drops duplicate gene columns that are remnants from the concat function
+      #This works by transposing the dataframe, dropping duplicates, then re-transposing
+      combinedDF = combinedDF.T.drop_duplicates().T
+      #Sets the index to the gene column
+      combinedDF = combinedDF.set_index('Gene')
 		
-		#Starts a dataFrame with the filenames as the index
-		metaDF = pd.DataFrame(filenames).rename(columns={0:'Sample'})
-		metaDF = metaDF.set_index('Sample')
+      #Starts a dataFrame with the filenames as the index
+      metaDF = pd.DataFrame(filenames).rename(columns={0:'Sample'})
+      metaDF = metaDF.set_index('Sample')
 		
-		#Saves the dataframes in a single excel file in the current directory
-		writer = pd.ExcelWriter('Count Export.xlsx')
-		combinedDF.to_excel(writer,'Counts')
-		metaDF.to_excel(writer,'MetaData')
-		writer.save()
+      #Saves the dataframes in a single excel file in the current directory
+      combinedDF.to_csv('CompiledCounts.csv')
+      metaDF.to_excel('MetaData.csv')
 
 - To run the python script, make sure that you are operating in the correct conda environment
 
-		conda activate py3.7
+      conda activate py3.7
 
 - Make sure that the python script is in the directory where all of the HTseq output files are located
 - To move the file
 
-		cp aggregate_counts.py /path/to/directory/htseq_counts
+      cp aggregate_counts.py /path/to/directory/htseq_counts
 
 - Navigate to the directory where the HTseq counts are located using `cd`
 - Run the python script
 
-		python aggregate_counts.py
+      python aggregate_counts.py
 
-- This will create a file called 'Count Export.xlsx' that can be downloaded to your local machine
+- This will create a files called '**CompiledCounts.csv**' & '**MetaData.csv**' that can be downloaded to your local machine
 
 ## Exporting the count and summary files ##
 - Download the aggregated count file
 
-		scp -i "AWS_key.pem" centos@ec2-34-227-60-128.compute-1.amazonaws.com:/home/centos/Count Export.xlsx ~/Downloads
+      scp -i "AWS_key.pem" centos@ec2-34-227-60-128.compute-1.amazonaws.com:/home/centos/CompiledCounts.csv ~/Downloads
 
 - This will place the file into your Downloads directory
 - Download the summary file
 
-		scp -i "AWS_key.pem" centos@ec2-34-227-60-128.compute-1.amazonaws.com:/home/centos/compiled_STAR_stats.txt ~/Downloads
+      scp -i "AWS_key.pem" centos@ec2-34-227-60-128.compute-1.amazonaws.com:/home/centos/compiled_STAR_stats.txt ~/Downloads
 
 - This will place the file into your Downloads directory
 
 ## What to do with the remaining data ##
 ### Checking for contamination with phyloFlash ###
+- To run phyloFlash create a pbs script
+
+      nano run_phyloFlash.pbs
+
+- Copy and paste the following into the blank text file **(make sure to change the input file names to your files)**:
+
+      #run_phyloFlash.pbs
+      #!/bin/bash
+      #PBS -N phyloFlash
+      #PBS -l ncpus=8
+      #PBS -l mem=32gb
+      #PBS -m ae
+      #PBS -M mclear@bnl.gov
+
+      source activate py3.7
+
+      cd $PBS_O_WORKDIR
+
+      phyloFlash.pl -lib run01 -read1 reads_F.fq.gz \
+      -read2 -reads_R.fq.gz \
+      -almosteverything

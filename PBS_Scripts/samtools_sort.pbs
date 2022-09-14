@@ -4,13 +4,9 @@
 #PBS -l ncpus=4
 #PBS -l mem=8gb
 #PBS -m ae
-#PBS -M mclear.go.olemiss.edu
+#PBS -M mclear@bnl.gov
 
-workdir = "insert/the/path/to/your/files/here"
-
-cd $workdir
-
-export PATH=/usr/local/bin/:$PATH
+cd $PBS_O_WORKDIR
 
 for i in $(ls *Aligned.out.bam | sed 's/.bam//')
 do
