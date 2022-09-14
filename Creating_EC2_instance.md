@@ -8,6 +8,7 @@
 
 - Press the **Launch instance** button
 <img src="Figures/select_launch_instance.png" height="300">
+
 - Name your instance something relevant to you e.g. (RNAseq Processing)
 - Under **Application and OS Images** enter `centos7` into the search bar
 - Initially, 0 results will be returned. Wait a few seconds and search results should populate your screen
