@@ -12,7 +12,7 @@ cd $PBS_O_WORKDIR
 
 for f in $(ls *fastq.gz | sed 's/fastq.gz//')
 do
-zcat ${f}fastq.gz | reformat.sh in=${f} out1=${f}_R1.fastq out2=${f}_R2.fastq 
+zcat ${f}fastq.gz | reformat.sh in=${f}fastq.gz out1=${f}_R1.fastq out2=${f}_R2.fastq 
 done 
 
 gzip *.fastq

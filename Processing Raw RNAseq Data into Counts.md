@@ -108,7 +108,7 @@
 
       for f in $(ls *fastq.gz | sed 's/fastq.gz//')
       do
-      zcat ${f}fastq.gz | reformat.sh in=${f} out1=${f}_R1.fastq out2=${f}_R2.fastq 
+      zcat ${f}fastq.gz | reformat.sh in=${f}fastq.gz out1=${f}_R1.fastq out2=${f}_R2.fastq 
       done 
 
       gzip *.fastq
@@ -119,6 +119,10 @@
 - Navigate to the directory with all of your interleaved fastq.gz files and run the following command **(make sure to change the path to your file path)**:
 
       qsub PATH/to/your/split_Reads.pbs
+
+- To check the progress on the job:
+
+      qstat -a
 
 ## Running FastQC on the raw files ##
 - Navigate into the project folder that you created where your split reads are located
@@ -134,7 +138,7 @@
 
       #Initial QC run     
       #!/bin/bash
-      #PBS -N QC_RAWdata_Aditi
+      #PBS -N QC_RAW
       #PBS -l ncpus=4
       #PBS -l mem=8gb
       #PBS -m ae
@@ -160,32 +164,32 @@
 
 - To check the progress on the job:
 
-		qstat -a
+      qstat -a
 
 ### Running MultiQC on the FastQC output ###
 - To easily view all of the multiQC output at the same time. First navigate to the directory where you deposited all of the fastQC output files. 
 
-		cd fastQC_Raw_Output
+      cd fastQC_Raw_Output
 
 - Create a new multiQC.pbs file
 
-		nano runMultiQC.pbs
+      nano runMultiQC.pbs
 
 - Once in the appropriate directory, make a .pbs file according to the following template:
 
-		#Code for MultiQC.pbs
-    	#!/bin/bash
-		#PBS -N MultiQC
-		#PBS -l ncpus=4
-		#PBS -l mem=8gb
-		#PBS -m ae
-		#PBS -M mclear.go.olemiss.edu
+      #Code for MultiQC.pbs
+      #!/bin/bash
+      #PBS -N MultiQC
+      #PBS -l ncpus=4
+      #PBS -l mem=8gb
+      #PBS -m ae
+      #PBS -M mclear@bnl.gov
 
-		cd $PBS_O_WORKDIR
+      cd $PBS_O_WORKDIR
 
-		module load py3.7
+      source activate py3.7
 
-		multiqc .
+      multiqc .
 
 - Make sure you change the email portion of the script to your email
 - press ctrl + x
@@ -194,7 +198,7 @@
 - Make sure you are in the directory where the FastQC output files are located
 - To run multiQC
 
-		qsub runMultiQC.pbs
+      qsub runMultiQC.pbs
 
 - This will create multiple output files, but we would like to download the `multiqc_report.html` file
 - Download the file to your local machine and open it in your browser to view the output
@@ -202,116 +206,142 @@
 ## Running Trimmomatic on the raw files ##
 - Create a new file for running Trimmomatic
 
-		nano trimmomatic.pbs
+      nano run_trimm.pbs
 
 - This will open a blank text file
 - Copy and paste the following text into the blank template. Make sure you change the email!:
 
- 	   #Code for trimmomatic.pbs
-    	#!/bin/bash
-    	#PBS -N clean_adapters
-    	#PBS -l ncpus=8
-    	#PBS -l mem=16gb
-    	#PBS -m ae
-    	#PBS -M mclear.go.olemiss.edu
+      #Code for trimmomatic.pbs
+      #!/bin/bash
+      #PBS -N clean_adapters
+      #PBS -l ncpus=8
+      #PBS -l mem=16gb
+      #PBS -m ae
+      #PBS -M mclear@bnl.gov
     
-    	cd $PBS_O_WORKDIR
-       
-    	for f in $(ls *1_001.fastq.gz | sed 's/1_001.fastq.gz//' | sort -u)
-    	do
-    	java -jar ~/Trimmomatic-0.36/trimmomatic-0.36.jar PE -phred33 ${f}1_001.fastq.gz ${f}2_001.fastq.gz  ${f}1_paired.fq.gz ${f}1_unpaired.fq.gz ${f}2_paired.fq.gz ${f}2_unpaired.fq.gz ILLUMINACLIP:TruSeq3-PE.fa:2:30:10:2:True LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
-    	done
+      cd $PBS_O_WORKDIR
+      
+      for f in $(ls *1.fastq.gz | sed 's/1.fastq.gz//' | sort -u)
+      do
+      java -jar ~/Trimmomatic-0.39/trimmomatic-0.39.jar PE -phred33 \
+      ${f}1.fastq.gz ${f}2.fastq.gz \
+      ${f}1_paired.fq.gz ${f}1_unpaired.fq.gz \
+      ${f}2_paired.fq.gz ${f}2_unpaired.fq.gz \
+      ILLUMINACLIP:/home/centos/Trimmomatic-0.39/adapters/TruSeq3-PE.fa:2:30:10:2:True \
+      LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+      done
 
 ### Running FastQC and MultiQC on the trimmed and cleaned files ###
-- Create a directory to deposit the new FastQC output files
-- Within the `Medicago` directory:
-
-		mkdir  FastQC_Trimmed_Output
-
 - Make a new file for running FastQC
 
-	nano  fastQC_trimmed.pbs
+      nano  fastQC_trimmed.pbs
 
 - This will open a blank text document. Copy and paste the following code into the document. Make sure you change the email address!
 
-		#Post Trimmomatic fastQC.pbs
-		#!/bin/bash
-		#PBS -N trimmed_fastQC
-		#PBS -l ncpus=4
-		#PBS -l mem=8gb
-		#PBS -m ae
-		#PBS -M mclear.go.olemiss.edu
+      #Initial QC run     
+      #!/bin/bash
+      #PBS -N QC_Trim
+      #PBS -l ncpus=4
+      #PBS -l mem=8gb
+      #PBS -m ae
+      #PBS -M mclear@bnl.gov
+    
+      cd $PBS_O_WORKDIR
 
-		cd $PBS_O_WORKDIR
+      mkdir FastQC_Trim_Output
 
-		for f in $(ls *noadapt.fq | sed 's/noadapt.fq//')
-		do
-		~/FastQC/fastqc -t 4 -o FastQC_Trimmed_Output ${f}noadapt.fq
-		done
+      for f in $(ls *.fq.gz)
+      do
+      zcat ${f} | ~/FastQC/fastqc -t 4 -o FastQC_Trim_Output ${f}
+      done 
 
 - Press ctrl + x
 - Press `y`
 - Press Enter
 - To run the new FastQC script:
 
-		qsub fastQC_trimmed.pbs
+      qsub fastQC_trimmed.pbs
 
 - To view the output navigate into the output directory, first copy the runMultiQC.pbs file into your new output folder
 
-		cd FastQC_Raw_Output
-		cp runMultiQC.pbs ../FastQC_Trimmed_Output
+      cd FastQC_Raw_Output
+      cp runMultiQC.pbs ../FastQC_Trimmed_Output
 
 - Navigate into your new output directory
 
-		cd ../FastQC_Trimmed_Output
+      cd ../FastQC_Trimmed_Output
 
 - Run MultiQC
 
-		qsub runMultiQC.pbs
+      qsub runMultiQC.pbs
 
 - When completed, download the `multiqc_report.html` file to your local machine and view on a browser
 - Make sure that sequence quality looks good and ensure that adapters have been removed
 
 ## Mapping the cleaned reads to reference genome(s) ##
-### Creating a STAR indexed reference genome ###
-- Create a new directory for the indexed genome
-
-		mkdir M_trunV5
-
+### Creating a STAR indexed reference genome (*Medicago truncatula* example) ###
 - Create a new pbs file for generating the M. truncatula indexed genome for STAR mapping
 
-		nano medicago_STAR_index.pbs
+      nano medicago_STAR_index.pbs
 
 - Copy and paste the following into the empty text file, make sure you change the email!		
 
-		#STAR medicagoIndex.pbs
-		#!/bin/bash
-		#PBS -N medicago_Index
-		#PBS -l ncpus=8
-		#PBS -l mem=64gb
-		#PBS -m ae
-		#PBS -M mclear.go.olemiss.edu
+      #STAR medicagoIndex.pbs
+      #!/bin/bash
+      #PBS -N medicago_Index
+      #PBS -l ncpus=8
+      #PBS -l mem=58gb
+      #PBS -m ae
+      #PBS -M mclear@bnl.gov
 
-		cd $PBS_O_WORKDIR
+      cd $PBS_O_WORKDIR
 
-		~/STAR-2.7.10a/bin/Linux_x86_64_static/STAR --runMode genomeGenerate \
-		--genomeDir ~/Medicago/M_truncV5 \
-		--genomeFastaFiles ~/Genomes/MtrunA17r5.0-20161119-ANR.genome.fasta \
-		--sjdbGTFfile ~/Genomes/MtrunA17r5.0-ANR-EGN-r1.8.gff3 \
-		--sjdbOverhang 100 \
-		--genomeSAindexNbases 13 \
-		--runThreadN 8
+      STAR --runMode genomeGenerate \
+      --genomeDir ~/Medicago/M_truncV5 \
+      --genomeFastaFiles ~/Genomes/Mtrunc_v5/mtruna17r5.0-20161119-anr.genome.fasta \
+      --sjdbGTFfile ~/Genomes/Mtrunc_v5/MtrunA17r5.0-ANR-EGN-r1.8.gff3 \
+      --sjdbGTFtagExonParentGene ID \
+      --sjdbOverhang 100 \
+      --genomeSAindexNbases 13 \
+      --runThreadN 8
 
 - Close and save the file
 - To generate the index file run
 
-		qsub medicago_STAR_index.pbs
+      qsub medicago_STAR_index.pbs
 
-### concatenating genomes (optional) ###
+### Creating a STAR indexed reference genome (Rhizobia example) ###
+- Create a new pbs file for generating the M. truncatula indexed genome for STAR mapping
+
+      nano rhizobia_STAR_index.pbs
+
+- Copy and paste the following into the empty text file, make sure you change the email!
+
+      #STAR rhizobiaIndex.pbs
+      #!/bin/bash
+      #PBS -N SMp0_Index
+      #PBS -l ncpus=8
+      #PBS -l mem=58gb
+      #PBS -m ae
+      #PBS -M mclear@bnl.gov
+
+      cd $PBS_O_WORKDIR
+
+      STAR --runMode genomeGenerate \
+      --genomeDir ~/Genomes_Indexed/SMp01_Indexed \
+      --genomeFastaFiles ~/Genomes/SMp01/SMp01_genome_trd.fasta \
+      --sjdbGTFfile ~/Genomes/SMp01/SMp01_491863.gff \
+      --sjdbOverhang 100 \
+      --genomeSAindexNbases 10 \
+      --sjdbGTFfeatureExon CDS \
+      --sjdbGTFtagExonParentGene ID \
+      --runThreadN 8
+
+### Concatenating genomes (optional) ###
 ### Mapping reads to indexed reference genome ###
 - Create a new pbs file for mapping the Medicago reads to the indexed genome file
 
-		nano STAR_map_medicago.pbs
+      nano STAR_map_medicago.pbs
 
 - Copy and paste the following into the empty text file, make sure you change the email!
 

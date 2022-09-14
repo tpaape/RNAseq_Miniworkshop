@@ -1,0 +1,19 @@
+#Code for trimmomatic.pbs
+#!/bin/bash
+#PBS -N clean_adapters
+#PBS -l ncpus=8
+#PBS -l mem=16gb
+#PBS -m ae
+#PBS -M mclear@bnl.gov
+    
+cd $PBS_O_WORKDIR
+      
+for f in $(ls *1.fastq.gz | sed 's/1.fastq.gz//' | sort -u)
+do
+java -jar ~/Trimmomatic-0.39/trimmomatic-0.39.jar PE -phred33 \
+${f}1.fastq.gz ${f}2.fastq.gz \
+${f}1_paired.fq.gz ${f}1_unpaired.fq.gz \
+${f}2_paired.fq.gz ${f}2_unpaired.fq.gz \
+ILLUMINACLIP:/home/centos/Trimmomatic-0.39/adapters/TruSeq3-PE.fa:2:30:10:2:True \
+LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+done

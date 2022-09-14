@@ -1,0 +1,19 @@
+#STAR rhizobiaIndex.pbs
+#!/bin/bash
+#PBS -N SMp0_Index
+#PBS -l ncpus=8
+#PBS -l mem=58gb
+#PBS -m ae
+#PBS -M mclear@bnl.gov
+
+cd $PBS_O_WORKDIR
+
+STAR --runMode genomeGenerate \
+--genomeDir ~/Genomes_Indexed/SMp01_Indexed \
+--genomeFastaFiles ~/Genomes/SMp01/SMp01_genome_trd.fasta \
+--sjdbGTFfile ~/Genomes/SMp01/SMp01_491863.gff \
+--sjdbOverhang 100 \
+--genomeSAindexNbases 10 \
+--sjdbGTFfeatureExon CDS \
+--sjdbGTFtagExonParentGene ID \
+--runThreadN 8

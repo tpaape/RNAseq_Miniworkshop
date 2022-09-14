@@ -2,18 +2,17 @@
 #!/bin/bash
 #PBS -N medicago_Index
 #PBS -l ncpus=8
-#PBS -l mem=64gb
+#PBS -l mem=58gb
 #PBS -m ae
-#PBS -M abhat@bnl.gov
+#PBS -M mclear@bnl.gov
 
-outputdir = "insert path to new output directory here"
+cd $PBS_O_WORKDIR
 
-mkdir ${outputdir}
-
-~/STAR-2.7.10a/bin/Linux_x86_64_static/STAR --runMode genomeGenerate \
---genomeDir ${outputdir} \
+STAR --runMode genomeGenerate \
+--genomeDir ~/Medicago/M_truncV5 \
 --genomeFastaFiles ~/Genomes/Mtrunc_v5/mtruna17r5.0-20161119-anr.genome.fasta \
 --sjdbGTFfile ~/Genomes/Mtrunc_v5/MtrunA17r5.0-ANR-EGN-r1.8.gff3 \
+--sjdbGTFtagExonParentGene ID \
 --sjdbOverhang 100 \
 --genomeSAindexNbases 13 \
 --runThreadN 8

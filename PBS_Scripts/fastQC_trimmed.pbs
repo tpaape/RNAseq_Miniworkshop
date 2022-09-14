@@ -1,6 +1,6 @@
 #Initial QC run     
 #!/bin/bash
-#PBS -N QC_RAW
+#PBS -N QC_Trim
 #PBS -l ncpus=4
 #PBS -l mem=8gb
 #PBS -m ae
@@ -8,9 +8,9 @@
     
 cd $PBS_O_WORKDIR
 
-mkdir FastQC_Raw_Output
+mkdir FastQC_Trim_Output
 
-for f in $(ls *.fastq.gz)
+for f in $(ls *.fq.gz)
 do
-zcat ${f} | ~/FastQC/fastqc -t 4 -o FastQC_Raw_Output ${f}
+zcat ${f} | ~/FastQC/fastqc -t 4 -o FastQC_Trim_Output ${f}
 done 

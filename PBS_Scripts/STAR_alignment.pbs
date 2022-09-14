@@ -1,18 +1,16 @@
 #STAR.pbs
 #!/bin/bash
-#PBS -N STAR_medicago
+#PBS -N STAR_align
 #PBS -l ncpus=8
 #PBS -l mem=32gb
 #PBS -m ae
 #PBS -M mclear@bnl.gov
 
-workdir = "insert/the/path/to/your/files/here"
-
-cd $workdir
+cd $PBS_O_WORKDIR
 
 for i in $(ls *R1_paired.fq.gz | sed 's/R1_paired.fq.gz//')
 do
-~/STAR-2.7.10a/bin/Linux_x86_64_static/STAR --runMode alignReads \
+STAR --runMode alignReads \
 --readFilesCommand zcat \
 --outSAMtype BAM Unsorted \
 --genomeDir ~/Genomes_Indexed/STf07_Indexed \
@@ -20,6 +18,9 @@ do
 --outReadsUnmapped Fastx \
 --runThreadN 8 \
 --quantMode GeneCounts \
+-–sjdbGTFfile ~/Genomes/STf07/Stf07_491978.gff \
+--sjdbGTFfeatureExon CDS \
+--sjdbGTFtagExonParentGene ID \
 --outFileNamePrefix ${i}STf07 \
 --alignIntronMax 3000
 done
