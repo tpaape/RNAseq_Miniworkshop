@@ -85,7 +85,7 @@
 	- Note that you will need to change the key name: "AWS_key.pem" to reflect the name of the key you created and you will also need to copy instance Public DNS from your EC2 login information obtained
 	- You should be able to simply copy the example from the EC2 connect window we opened previously on a separate tab
 
-      ssh -i "AWS_key.pem" centos@ec2-34-227-60-128.compute-1.amazonaws.com
+          ssh -i "AWS_key.pem" centos@ec2-34-227-60-128.compute-1.amazonaws.com
 
 - You may be prompted that the host key is not cached for this server. This is fine, you can accept this warning and continue logging into the instance
 
