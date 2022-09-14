@@ -272,3 +272,16 @@
 - You should see an output like this:
 
       16242 ?        00:00:05 falcon-sensor
+
+## Install AWS Client ##
+- Download package
+
+      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+
+- Unzip package
+
+      unzip awscliv2.zip
+
+- Install AWS client
+
+      sudo ./aws/install
