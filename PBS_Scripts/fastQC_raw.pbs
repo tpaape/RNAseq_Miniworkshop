@@ -4,17 +4,13 @@
 #PBS -l ncpus=4
 #PBS -l mem=8gb
 #PBS -m ae
-#PBS -M abhat@bnl.gov
+#PBS -M mclear@bnl.gov
     
+cd $PBS_O_WORKDIR
 
-workdir = "insert/the/path/to/your/files/here"
-outputdir = "insert name/path of output directory here"
+mkdir FastQC_Raw_Output
 
-cd ${workdir}
-
-mkdir ${outputdir}
-
-for f in $(ls *_paired.fq.gz)
+for f in $(ls *.fastq.gz)
 do
 zcat ${f} | ~/FastQC/fastqc -t 4 -o FastQC_Raw_Output ${f}
 done 
