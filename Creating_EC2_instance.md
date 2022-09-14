@@ -48,10 +48,10 @@
 <img src="Figures/check_new_instance.png" height="200">
 	- Ensure that the instance you created says **Running** under **Instance state** and that the status check says **2/2 checks passed**
 - Expand the **Advanced details** menu at the bottom of the screen
-<img src="Figures/advanced_tab.png" height="300">
+<img src="Figures/advanced_tab.png" height="400">
 - Under **IAM instance profile **change the dropdown menu to **s3Admin**
 - Under **Detailed CloudWatch monitoring ** change the dropdown menu to **enable**
-<img src="Figures/advanced_options.png" height="300">
+<img src="Figures/advanced_options.png" height="400">
 
 ## SSH into your instance (Mac)
 - Ensure you are on BNL's VPN
@@ -113,6 +113,7 @@
 		lsblk
 
 - You should see something that looks similar to this:
+
 		[centos@ip-172-31-87-133 ~]$ lsblk
 		NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
 		xvda    202:0    0  3.9T  0 disk
