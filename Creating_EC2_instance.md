@@ -74,7 +74,7 @@
 	- Note: in this example, we named our key pair name "AWS_key.pem" and place it in the Documents directory
 - Navigate into the directory that contains your key pair name
 
-	cd Documents
+		cd Documents
 
 	- Note: in this example, it will be in my Documents directory
 - Change the file permission of your key pair name file so that it is not publicly viewable
