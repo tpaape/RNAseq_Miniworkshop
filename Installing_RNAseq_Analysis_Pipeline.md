@@ -75,14 +75,21 @@
 
 		chmod 755 fastqc
 
-- You can now run fastqc by running `./FastQC/fastqc`
+- Permanently add fastqc to your path by open the following file:
+
+		sudo nano ~/.bashrc
+- At the bottom of the file add the following line:
+		export PATH="/home/centos/FastQC:$PATH"
+
+-If you close your current terminal and reconnect, you should be able to run FastQC by running the command `fastqc`
+
 
 ## Install MultiQC ##
 - Create a conda environment for multiQC
 		conda create --name py3.7 python=3.7
 		conda activate py3.7
 - Install MultiQC
-		conda install -c bioconda/label/cf201901 multiqc
+		conda install -c bioconda/label/cf201901 multiqc bbmap
 
 ## Install Trimmomatic ##
 - Download binary
@@ -102,7 +109,15 @@
 		cd STAR-2.7.10a/source
 
 - Install
-		make
+		make STAR
+
+- Permanently add fastqc to your path by open the following file:
+		sudo nano ~/.bashrc
+
+- At the bottom of the file add the following line:
+		export PATH="/home/centos/STAR-2.7.10a/bin/Linux_x86_64_static:$PATH"
+
+-If you close your current terminal and reconnect, you should be able to run STAR by running the command `STAR`
 
 ## Install samtools ##
 - Install samtools dependencies
@@ -115,7 +130,7 @@
 		wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
 
 - Unpack the file
-		tar xvjf samtools-1.9.tar.bz2
+		tar -xvjf samtools-1.9.tar.bz2
 
 - Navigate into the samtools directory
 		cd samtools-1.9
@@ -130,9 +145,6 @@
 - Navigate to your home directory
 		cd
 
-- Export samtools to your path
-		export PATH=$PATH:/directory/samtools-0.1.19
-
 ## Install HTseq and other count processing tools ##
 - If not already activated, activate the py3.7 environment
 		conda activate py3.7
@@ -140,3 +152,42 @@
 		conda install -c bioconda htseq
 - Install pandas
 		conda install -c anaconda pandas
+
+## Install PhyloFlash (optional) ##
+- Note: this install can be time consuming and difficult. Only attempt if you NEED to use phyloFlash
+
+- Activate your conda environment
+		conda activate py3.7
+
+- Install dependencies from bioconda:		
+		conda install -c bioconda bowtie vsearch spades mafft bedtools
+
+- Install dependencies from Anaconda:
+		conda install -c anaconda scipy cython
+
+- Install dependencies from conda-forge:
+		conda install -c conda-forge biopython
+
+- Download phyloFlash
+		wget https://github.com/HRGV/phyloFlash/archive/pf3.4.tar.gz
+		tar -xzf pf3.4.tar.gz
+
+- Permanently add fastqc to your path by open the following file:
+		sudo nano ~/.bashrc
+
+- At the bottom of the file add the following line:
+		export PATH="/home/centos/phyloFlash-pf3.4:$PATH"
+
+-If you close your current terminal and reconnect, you should be able to run phyloFlash by activating your conda environment `conda activate py3.7` and  running the command `phyloFlash.pl -check_env`
+
+- Create the database locally
+		phyloFlash_makedb.pl --remote
+
+- This step will take a while. Make sure you leave time for this installation to take place. You will occasionally be prompted to accept downloads etc.
+
+- Confirm that your phyloFlash environment is operational by running the command:
+		phyloFlash.pl -check_env
+
+- We did not install EMIRGE as part of this process. EMIRGE has proven difficult to install successfully so make sure you do not attempt to use EMIRGE during your phyloFlash analyses
+
+		

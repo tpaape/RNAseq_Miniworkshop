@@ -40,11 +40,18 @@
 - Under Configure storage, change the root volume to the size of hard drive you anticipate needing for your project
 	- Note: it is possible to exand your hard drive after the instance is created, but it is more difficult than picking the correct volume at the beginning
 	- 2 TB is a good size for data processing, but will not be big for processing large datasets and simultaneously storing all intermediate files
+	- Anything **>2 TB** will have to reformated after the instance is created. This can be confusing so only add more than 2 TB if needed
 <img src="Figures/configure_storage.png" height="200">
 - Press the **Launch instance** button
 - Press the **View all instances** button
 - You should see a screen that looks like this:
-	- Ensure that the instance you created says **Running** under **Instance state**
+<img src="Figures/check_new_instance.png" height="200">
+	- Ensure that the instance you created says **Running** under **Instance state** and that the status check says **2/2 checks passed**
+- Expand the **Advanced details** menu at the bottom of the screen
+<img src="Figures/advanced_tab.png" height="300">
+- Under **IAM instance profile **change the dropdown menu to **s3Admin**
+- Under **Detailed CloudWatch monitoring ** change the dropdown menu to **enable**
+<img src="Figures/advanced_options.png" height="300">
 
 ## SSH into your instance (Mac)
 - Ensure you are on BNL's VPN
@@ -99,6 +106,101 @@
 - Check the public IP address and user name included here. 
 	- If your User name is different than `centos`, change it to `centos` then repeat the MobaXterm login steps
 <img src="Figures/ec2_instance_check.png" height="300">
+
+## (OPTIONAL) Expand storage for instances that are >2 TB ##
+- Note: this is required if your instance is >2 TB, otherwise you will not be able to use all of the storage that you allotted to your instance
+- Check to see how your hard drive is partitioned by running the following command:
+		lsblk
+
+- You should see something that looks similar to this:
+		[centos@ip-172-31-87-133 ~]$ lsblk
+		NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+		xvda    202:0    0  3.9T  0 disk
+		└─xvda1 202:1    0    2T  0 part /
+
+- Notice that you have 4 TB of total space but only 2 TB are allocated to the root partition, "xvda1"
+- You will need to make a note of the disk and partition to use in later steps in our case:
+	- Disk: "xvda"
+	- Partition: "xvda1"
+- Use the gdisk tool to change the partition table
+		sudo gdisk /dev/xvda
+
+- You will see something similar to the following:
+		[centos@ip-172-31-87-133 ~]$ sudo gdisk /dev/xvda
+		GPT fdisk (gdisk) version 0.8.10
+
+		Partition table scan:
+		MBR: MBR only
+ 		BSD: not present
+  		APM: not present
+  		GPT: not present
+
+		***************************************************************
+		Found invalid GPT and valid MBR; converting MBR to GPT format
+		in memory. THIS OPERATION IS POTENTIALLY DESTRUCTIVE! Exit by
+		typing 'q' if you don't want to convert your MBR partitions
+		to GPT format!
+		***************************************************************
+
+		Command (? for help):
+
+- Enter the following commands to create a GPT partition:
+		Command (? for help): n                                                                                                        
+		Partition number (2-128, default 2): 128                                                                               
+		First sector (34-6291455966, default = 4294967296) or {+-}size{KMGTP}: 34                     
+		Last sector (34-2047, default = 2047) or {+-}size{KMGTP}:                                                  
+		Current type is 'Linux filesystem'
+		Hex code or GUID (L to show codes, Enter = 8300): ef02                                                     
+		Changed type of partition to 'BIOS boot partition'
+
+- Enter the following commands to delete the root partition:
+		Command (? for help): d                                                                                                         
+		Partition number (1-128): 1
+
+- Enter the following commands to recreate the root partition:
+		Command (? for help): n                                                                                                         
+		Partition number (1-128, default 1): 1                                                                                     
+		First sector (2048-6291455966, default = 2048) or {+-}size{KMGTP}:                                  
+		Last sector (2048-6291455966, default = 6291455966) or {+-}size{KMGTP}:                       
+		Current type is 'Linux filesystem'
+		Hex code or GUID (L to show codes, Enter = 8300):                                                             
+		Changed type of partition to 'Linux filesystem'
+
+- Enter the following commands to save the GPT partition table:
+		Command (? for help): w                                                                                                        
+		Final checks complete. About to write GPT data. THIS WILL OVERWRITE EXISTING
+		PARTITIONS!!
+		Do you want to proceed? (Y/N): y                                                                                          
+		OK; writing new GUID partition table (GPT) to /dev/xvda.
+		The operation has completed successfully.
+
+- Expand the file system
+		sudo mount -o nouuid /dev/xvda1 /mnt
+		sudo xfs_growfs /dev/xvda1
+
+- Run the following commands **(Note: Run commands 1 by 1 to avoid mistakes!)**:
+		sudo mount --bind /proc /mnt/proc
+		sudo mount --bind /sys /mnt/sys
+		sudo mount --bind /dev /mnt/dev
+		sudo chroot /mnt /bin/bash
+		grub2-install /dev/xvda
+		exit
+		sudo umount -l /mnt/dev
+		sudo umount -l /mnt/sys
+		sudo umount -l /mnt/proc
+		sudo umount -l /mnt
+
+- Using the AWS EC2 page on your browser, stop your instance
+- Once your instance as stopped, start it again
+- SSH into your instance. **Note: it will have a new IP address!**
+- Run the following command to check that the full volume has been utilized:
+		lsblk
+
+- It should look something like this:
+		$ lsblk
+		NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+		xvda    202:0    0   4T  0 disk 
+		└─xvda1 202:1    0   4T  0 part /
 
 ## Install required packages
 - Crowdstrike must be installed on all instances. This is a BNL requirement. 
