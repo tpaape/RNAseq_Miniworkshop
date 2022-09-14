@@ -14,6 +14,7 @@
 - Initially, 0 results will be returned. Wait a few seconds and search results should populate your screen
 - Select the top result titled **CentOS7 (x86_674) - with Updates HVM**
 <img src="Figures/select_centos7.png" height="300">
+
 - Press **Continue**
 - Select your instance type
 	- Note: it is critical that you select the processor and memory size needed for the jobs you plan on running. If you select an undersized instance, you will need to create a new one from scratch and if you select one that is substantially oversized it will incur a greater cost. 
@@ -26,6 +27,7 @@
 - Use the .pem key file format
 - Press **Create key pair**
 <img src="Figures/create_key.png" height="400">
+
 - The key pair file will automatically be downloaded into your Downloads directory
 - The key pair name will automatically populate the Key pair name dropdown window
 - Under Firewall (security groups):
@@ -38,18 +40,22 @@
 	- These options are unnecessary for doing computational work and pose a security risk to your instance
 	- There are some situations where it is useful to allow HTTP and HTTPs traffic, but you need special permission from ITD to do this
 <img src="Figures/key_pair_and_network_settings.png" height="400">
+
 - Under Configure storage, change the root volume to the size of hard drive you anticipate needing for your project
 	- Note: it is possible to exand your hard drive after the instance is created, but it is more difficult than picking the correct volume at the beginning
 	- 2 TB is a good size for data processing, but will not be big for processing large datasets and simultaneously storing all intermediate files
 	- Anything **>2 TB** will have to reformated after the instance is created. This can be confusing so only add more than 2 TB if needed
 <img src="Figures/configure_storage.png" height="200">
+
 - Press the **Launch instance** button
 - Press the **View all instances** button
 - You should see a screen that looks like this:
 <img src="Figures/check_new_instance.png" height="200">
+
 	- Ensure that the instance you created says **Running** under **Instance state** and that the status check says **2/2 checks passed**
 - Expand the **Advanced details** menu at the bottom of the screen
 <img src="Figures/advanced_tab.png" height="400">
+
 - Under **IAM instance profile **change the dropdown menu to **s3Admin**
 - Under **Detailed CloudWatch monitoring ** change the dropdown menu to **enable**
 <img src="Figures/advanced_options.png" height="400">
@@ -62,6 +68,7 @@
 - Press the SSH client tab
 - Keep this page open on a separate tab. We will come back to it later
 <img src="Figures/get_ssh_info.png" height="300">
+
 - Open up the terminal app on your mac
 - Go to your Downloads directory and move the key pair name file you created when making your EC2 instance to a permanent directory where you can easily find it
 	- Note: in this example, we named our key pair name "AWS_key.pem" and place it in the Documents directory
@@ -96,14 +103,18 @@
 - Navigate to the directory where you placed your key pair name file (ex: AWS_key.pem) and select that file
 - Press the OK button
 <img src="Figures/mobax_login.png" height="400">
+
 - MobaXterm will now try to connect to the instance
 - If you are successful, you will see a prompt that says `login as:`
 <img src="Figures/login_as.png" height="200">
+
 - If you used CentOS7 as the operating system, type in `centos` and press enter
 - If successful, you should see a prompt that looks like this:
 <img src="Figures/successful_login.png" height="200">
+
 - If your instance rejects your username you can check your login information by pressing the connect button on your EC2 dashboard
 <img src="Figures/check_username.png" height="300">
+
 - Check the public IP address and user name included here. 
 	- If your User name is different than `centos`, change it to `centos` then repeat the MobaXterm login steps
 <img src="Figures/ec2_instance_check.png" height="300">
