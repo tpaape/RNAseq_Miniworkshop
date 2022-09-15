@@ -48,7 +48,7 @@
       conda install -c conda-forge matplotlib
 
 ## Download BioinformaticsLibrary ##
-- Download the BioinformaticsLibrary.py script from github
+- Download the [BioinformaticsLibrary.py](https://github.com/mclear73/RNAseq_Miniworkshop/blob/main/Python%20Scripts/BioinformaticsLibrary.py) script from github
 - Make sure that this python is located in the working directory where plan on running your analyses
 
 ## Typical python use case ##
