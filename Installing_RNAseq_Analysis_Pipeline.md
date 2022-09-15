@@ -1,7 +1,7 @@
 # Installing RNAseq Analysis Pipeline #
 
 - This has been written assuming CentOS7 is the operating system and CrowdStrike has already been installed
-- If you need to install CrowdStrike, refer to the end of the [Creating_EC2_instance](https://github.com/mclear73/RNAseq_mini_workshop/blob/main/Creating_EC2_instance.md) instructions
+- If you need to install CrowdStrike, refer to the end of the [Creating_EC2_instance](https://github.com/mclear73/RNAseq_Miniworkshop/blob/main/Creating_EC2_instance.md) instructions
 
 ## Install dependencies ##
 - Install wget, nano, git, and java
