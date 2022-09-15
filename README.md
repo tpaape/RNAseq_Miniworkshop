@@ -1,6 +1,6 @@
 # RNAseq Mini-Course #
 - This repository is meant to be a resource for working with AWS EC2 instances and processing RNAseq data
-- How to clone this repository (and other private repositories you have access to:
+- How to clone this repository (and other private repositories you have access to):
 
       git clone https://username@github.com/mclear73/RNAseq_Miniworkshop.git
 
