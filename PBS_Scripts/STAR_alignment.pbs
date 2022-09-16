@@ -18,7 +18,7 @@ STAR --runMode alignReads \
 --outReadsUnmapped Fastx \
 --runThreadN 8 \
 --quantMode GeneCounts \
--–sjdbGTFfile ~/Genomes/STf07/Stf07_491978.gff \
+--sjdbGTFfile ~/Genomes/STf07/Stf07_491978.gff \
 --sjdbGTFfeatureExon CDS \
 --sjdbGTFtagExonParentGene ID \
 --outFileNamePrefix ${i}STf07 \
