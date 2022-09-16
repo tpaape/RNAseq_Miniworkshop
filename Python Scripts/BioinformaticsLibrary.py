@@ -14,6 +14,7 @@ import seaborn as sns
 from gprofiler import GProfiler
 import requests
 from pandas.api.types import CategoricalDtype
+import warnings
 
 
 
@@ -824,6 +825,82 @@ def plot_Genes_of_interest(normCounts_file, metaData_file, genesOfInterest_file,
             plt.savefig(name, dpi=300)
             plt.show()
 
+#Create Dot plot of PANTHER Overrepresentation test output
+def plot_PANTHER_enrich(file, title='PANTHER GO Enrichment',
+                        total_query_genes=None,
+                        sort_by='Name', output_name=None,
+                        plot_width=8, plot_height=10):
+    warnings.filterwarnings('ignore')
+    df = pd.read_csv(file, sep='\t', skiprows=12)
+    df = df[df[df.columns[0]].str.contains('Unclassified')==False]
+    
+    if total_query_genes is None:
+        query_num = int(df.columns[2].split(' ')[1].replace('(', '').replace(')', ''))
+        print('Query number extracted from output file. Query number is ' + str(query_num))
+
+    else:
+        query_num = int(total_query_genes)
+        print('Manual query number used. Query number is ' + str(query_num))
+
+    df['ratio'] = df[df.columns[2]] / query_num * 100
+       
+    df['-log10 P-value'] = -np.log10(df[df.columns[6]])
+        
+    minP = df['-log10 P-value'].min()
+    maxP = df['-log10 P-value'].max()
+       
+    hue = (minP, maxP)
+
+    df = df.rename(columns={df.columns[2]:'Counts'})
+    
+    matches = ['.pdf', '.png', '.svg', '.eps']
+    
+    if output_name is None:
+        filename = 'PANTHER_enrich_plot.pdf'
+    elif any(x in output_name for x in matches):
+        filename = output_name
+    else:
+        filename = 'incorrect_filetype_input_used.pdf'
+        print('Used incorrect filetype. Make sure file ends in:')
+        print('.pdf, .png, .svg, .eps')
+        print('created plot as .pdf by default')
+        
+    if sort_by == 'Name':
+        df = df.sort_values(by=[df.columns[0]])
+    elif sort_by == 'Pvalue':
+        df = df.sort_values(by=df.columns[6])
+    elif sort_by == 'Counts':
+        df = df.sort_values(by=df.columns[2])
+    elif sort_by == 'Ratio':
+        df = df.sort_values(by='ratio')
+        
+    df2 = df[df.columns[0]].str.split(' \(', expand=True)
+    
+    df['Name'] = df2[0]
+    
+    fig_name = title
+    
+    f, ax = plt.subplots(figsize=(int(plot_width), int(plot_height)))
+    g = sns.scatterplot(
+      data=df, x="ratio", y='Name', hue='-log10 P-value', 
+      size='Counts',
+      sizes=(30, 300), hue_norm=hue, legend="brief", palette="vlag")
+    ax.set_ylabel('GO Term', size=14)
+    ax.set_xlabel('Ratio (%)', size=14)
+
+    norm = plt.Normalize(df['-log10 P-value'].min(), df['-log10 P-value'].max())
+    sm = plt.cm.ScalarMappable(cmap='vlag', norm=norm)
+    sm.set_array([])
+        
+    h,l = g.get_legend_handles_labels()
+    
+    plt.legend(h[7:13],l[7:13],bbox_to_anchor=(1.06, 1), loc=2, borderaxespad=0., fontsize=10, title='Counts', frameon=False)
+        
+    cax = f.add_axes([ax.get_position().x1+0.06, ax.get_position().y0, 0.06, ax.get_position().height / 2])
+    cbar = ax.figure.colorbar(sm, cax=cax)
+    cbar.ax.set_title('-log10 P-value')
+    ax.set_title(fig_name)
+    plt.savefig(filename, bbox_inches='tight')
       
 #rootSort = ['HM075_Control_Root', 'HM075_CdTreated_Root',  'HM195_Control_Root', 
 #            'HM195_CdTreated_Root', 'HM302_Control_Root', 'HM302_HgTreated_Root',
