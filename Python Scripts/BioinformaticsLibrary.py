@@ -902,22 +902,55 @@ def plot_PANTHER_enrich(file, title='PANTHER GO Enrichment',
     ax.set_title(fig_name)
     plt.savefig(filename, bbox_inches='tight')
       
-#rootSort = ['HM075_Control_Root', 'HM075_CdTreated_Root',  'HM195_Control_Root', 
-#            'HM195_CdTreated_Root', 'HM302_Control_Root', 'HM302_HgTreated_Root',
-#       'HM304_Control_Root', 'HM304_HgTreated_Root','PI660407_Control_Root', 
-#       'PI660407_CdTreated_Root', 'PI660407_HgTreated_Root']
+def extractIntersection(geneDF, goEnrichDF):
+    goEnrichDF['intersections'] = goEnrichDF['intersections'].str.replace('[', '')
+    goEnrichDF['intersections'] = goEnrichDF['intersections'].str.replace(']', '')
+    goEnrichDF['intersections'] = goEnrichDF['intersections'].str.replace("'", "")
+    goEnrichDF['intersections'] = goEnrichDF['intersections'].str.replace(' ', '')
+    goEnrichDF = goEnrichDF.dropna(subset=['intersections'])
+    finalDF = pd.DataFrame(columns=geneDF.columns)
+    if 'Module' in goEnrichDF.columns:
+        for a,b,c,d in zip(goEnrichDF['intersections'], goEnrichDF['name'], 
+                           goEnrichDF['native'], goEnrichDF['Module']):
+            temp_list = a.split(',')
+            tempDF = geneDF[geneDF[geneDF.columns[0]].isin(temp_list)]
+            tempDF['GO Name'] = b
+            tempDF['GO ID'] = c
+            tempDF['Cluster'] = d
+            finalDF = pd.concat([finalDF, tempDF])
+    else:
+        for a,b,c,d in zip(goEnrichDF['intersections'], goEnrichDF['name'], 
+                           goEnrichDF['native'], goEnrichDF['Comparison']):
+            temp_list = a.split(',')
+            tempDF = geneDF[geneDF[geneDF.columns[0]].isin(temp_list)]
+            tempDF['GO Name'] = b
+            tempDF['GO ID'] = c
+            tempDF['Comparison'] = d
+            finalDF = pd.concat([finalDF, tempDF])
+    return finalDF
 
-#leafSort = ['HM001_Control_Leaf', 'HM001_CdTreated_Leaf','HM075_Control_Leaf','HM075_CdTreated_Leaf',
-#       'HM176_Control_Leaf','HM176_CdTreated_Leaf','HM178_Control_Leaf', 'HM178_HgTreated_Leaf',
-#       'HM195_Control_Leaf', 'HM195_CdTreated_Leaf','HM238_Control_Leaf', 'HM238_HgTreated_Leaf',
-#       'HM302_Control_Leaf', 'HM302_HgTreated_Leaf', 'HM304_Control_Leaf',
-#       'HM304_HgTreated_Leaf', 'PI660407_Control_Leaf', 'PI660407_CdTreated_Leaf',
-#        'PI660407_HgTreated_Leaf']
-      
-#plot_Genes_of_interest(normCounts_file='All TPM Counts.csv', 
-#                       metaData_file='allMetadata.csv', 
-#                       genesOfInterest_file='subset of module 31.csv',
-#                       treatment_column='StrainXTreatmentXTissue',
-#                       sort_order=rootSort,
-#                       subset='Root')   
+def auto_extract_intersection_from_enrichment(gene_file, enrich_file, 
+                                              output_name=None):
+    if 'xlsx' in gene_file:
+        genes = pd.read_excel(gene_file)
+    elif 'csv' in gene_file:
+        genes = pd.read_csv(gene_file)
+        
+    if 'xlsx' not in enrich_file:
+        raise ValueError('You did not supply an excel workbook file as enrichment_file.')
 
+        
+    sheets_dict = pd.read_excel(enrich_file, sheet_name=None)
+    
+    if output_name is None:
+        fileName = 'Compiled_GO_Enrich_Genes.xlsx'
+    else:
+        fileName = output_name + '.xlsx'
+    
+    writer = pd.ExcelWriter(fileName) 
+
+    for name, sheet in sheets_dict.items():
+        temp = extractIntersection(genes, sheet)
+        temp.to_excel(writer, sheet_name=name, index=False)
+        
+    writer.save()
