@@ -26,7 +26,7 @@
 	- The Anaconda Prompt should pop up
 	- Select the Anaconda Prompt program
 	- Follow the following steps
-- ** Mac/PC instructions Same:**
+- **Mac/PC instructions Same:**
 - Create a conda environment
 
       conda create -n BioLib python=3.9
