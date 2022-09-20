@@ -6,6 +6,37 @@
 
 - Make sure to change "username" to your username
 
+## Moving data in and out of AWS S3 buckets ##
+- It is expensive to stop instances if the only purpose of maintaining the instance is to store data. The most efficient AWS option for storing data is using an S3 bucket. 
+- I have created a bucket called **qpsi-team-bucket** that can be used for temporarily storing data
+- To transfer **from EC2 to S3** use the following template while on your ec2 instance:
+
+      aws s3 cp testFile.txt s3://qpsi-team-bucket
+
+- To transfer **from S3 to EC2** use the following template while on your ec2 instance:
+
+      aws s3 cp s3://qpsi-team-bucket/nph18078-sup-0002-tabless1-s11.xlsx ~/Temp/
+
+- This will create a new folder, "Temp" and download the nph...xlsx file there. Alternatively, you can specify an existing directory and download the file into there
+- **To transfer entire directories,** there are 2 methods:
+- Sync:
+
+      aws s3 sync native_Directory s3://qpsi-team-bucket
+
+- Recursive:
+
+      aws s3 cp my-local-folder s3://qpsi-team-bucket/ --recursive
+
+- To **transfer files based on wild cards:**
+
+      aws s3 cp s3://qpsi-team-bucket/ . --recursive --exclude "*" --include "*.fastq.gz"
+
+- This will copy all files ending in .fastq.gz from the qpsi-team-bucket to your current directory on your cluster
+
+      aws s3 cp /Temp/sub_temp/ s3://qpsi-team-bucket/ --recursive --exclude "*" --include "*fq"
+
+- This will copy all files from the sub_temp directory on your EC2 instance that end in "fq" to the qpsi-team-bucket bucket
+
 ## Schedule ##
 
 ### Thursday 9/7/22 ###
