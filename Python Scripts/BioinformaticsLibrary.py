@@ -910,22 +910,33 @@ def extractIntersection(geneDF, goEnrichDF):
     goEnrichDF = goEnrichDF.dropna(subset=['intersections'])
     finalDF = pd.DataFrame(columns=geneDF.columns)
     if 'Module' in goEnrichDF.columns:
-        for a,b,c,d in zip(goEnrichDF['intersections'], goEnrichDF['name'], 
-                           goEnrichDF['native'], goEnrichDF['Module']):
+        for a,b,c,d,e,f,g,h in zip(goEnrichDF['intersections'], goEnrichDF['name'], 
+                           goEnrichDF['native'], goEnrichDF['Module'], goEnrichDF['GO geneset'], 
+                           goEnrichDF['query_size'], goEnrichDF['overlap'], goEnrichDF['FDR']):
             temp_list = a.split(',')
             tempDF = geneDF[geneDF[geneDF.columns[0]].isin(temp_list)]
             tempDF['GO Name'] = b
             tempDF['GO ID'] = c
             tempDF['Cluster'] = d
+            tempDF['GO geneset'] = e
+            tempDF['query_size'] = f
+            tempDF['overlap'] = g
+            tempDF['FDR'] = h
             finalDF = pd.concat([finalDF, tempDF])
     else:
-        for a,b,c,d in zip(goEnrichDF['intersections'], goEnrichDF['name'], 
-                           goEnrichDF['native'], goEnrichDF['Comparison']):
+        for a,b,c,d,e,f,g,h in zip(goEnrichDF['intersections'], goEnrichDF['name'], 
+                           goEnrichDF['native'], goEnrichDF['Comparison'],
+                           goEnrichDF['GO geneset'], goEnrichDF['query_size'],
+                           goEnrichDF['overlap'], goEnrichDF['FDR']):
             temp_list = a.split(',')
             tempDF = geneDF[geneDF[geneDF.columns[0]].isin(temp_list)]
             tempDF['GO Name'] = b
             tempDF['GO ID'] = c
             tempDF['Comparison'] = d
+            tempDF['GO geneset'] = e
+            tempDF['query_size'] = f
+            tempDF['overlap'] = g
+            tempDF['FDR'] = h
             finalDF = pd.concat([finalDF, tempDF])
     return finalDF
 
