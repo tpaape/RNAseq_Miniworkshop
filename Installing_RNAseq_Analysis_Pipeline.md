@@ -228,7 +228,7 @@
 
       export PATH="/home/centos/phyloFlash-pf3.4:$PATH"
 
--If you close your current terminal and reconnect, you should be able to run phyloFlash by activating your conda environment `conda activate py3.7` and  running the command `phyloFlash.pl -check_env`
+- If you close your current terminal and reconnect, you should be able to run phyloFlash by activating your conda environment `conda activate py3.7` and  running the command `phyloFlash.pl -check_env`
 
 - Create the database locally
 
@@ -242,4 +242,25 @@
 
 - We did not install EMIRGE as part of this process. EMIRGE has proven difficult to install successfully so make sure you do not attempt to use EMIRGE during your phyloFlash analyses
 
-		
+## Install SRAtools (optional) ##
+- Note: this is useful for downloading public short read archives from NCBI
+- Run the following command to download the version for CentOS
+
+      wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-centos_linux64.tar.gz
+
+- Unzip the package by running:
+
+      tar -vxzf sratoolkit.tar.gz
+
+- Permanently add the SRAtoolkit to your path by opening the following file:
+
+      sudo nano ~/.bashrc
+
+- Add the following line to the bottom of the file
+
+      export PATH="/home/centos/sratoolkit.3.0.0-centos_linux64/bin:$PATH"
+
+- Save and close the file
+- If you close your current terminal and reconnect, you should be able to run SRAtools by  running the command `fastq-dump`
+- If this is the first time you have run SRAtools, you will need to run `vdb-config --interactive` to configure and activate SRATools
+- Simply follow the prompts to save and exit the config menu
