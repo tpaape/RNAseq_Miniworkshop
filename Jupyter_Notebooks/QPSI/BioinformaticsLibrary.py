@@ -1070,4 +1070,27 @@ def Zscore_from_GO_term_list(GO_term_file, count_file,
                     sub2_finalDF = zscore(sub2_finalDF, axis=1, nan_policy='omit')
                     subset2_filename = a + '_' + b +'_' + filename + '.csv'
                     sub2_finalDF.to_csv(subset2_filename)
+
+def count_DEGs(DEG_file, LFC_suffix='_log2FC', padj_suffix='_padj', 
+               L2FC_threshold=1, adjP_threshold=0.05):
+    if 'xlsx' in DEG_file:
+        DEGs = pd.read_excel(DEG_file)
+    elif 'csv' in DEG_file:
+        DEGs = pd.read_csv(DEG_file)
+    samps = [c for c in DEGs.columns if LFC_suffix in c]
+    samps = [s.replace(LFC_suffix, "") for s in samps]
+    LFC_thresh = abs(L2FC_threshold)
+    pval_thresh = abs(adjP_threshold)
+    finalDF = pd.DataFrame(columns=['Comparison', 'Up', 'Down'])
     
+    for i in samps:
+        cols = [c for c in DEGs.columns if i in c]
+        samp_DEG = DEGs[cols]
+        lfc_col = [c for c in samp_DEG.columns if LFC_suffix in c][0]
+        adjP_col =[c for c in samp_DEG.columns if padj_suffix in c][0]
+        samp_DEG = samp_DEG[samp_DEG[adjP_col] <  pval_thresh]
+        up_DEG = len(samp_DEG[samp_DEG[lfc_col]>= LFC_thresh])
+        down_DEG = len(samp_DEG[samp_DEG[lfc_col]<= -LFC_thresh])
+        s = pd.Series([i, up_DEG, down_DEG], index=['Comparison', 'Up', 'Down'])
+        finalDF = finalDF.append(s, ignore_index=True)
+    return finalDF    
