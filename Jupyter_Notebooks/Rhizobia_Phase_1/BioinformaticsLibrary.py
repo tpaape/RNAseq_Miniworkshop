@@ -1071,10 +1071,13 @@ def Zscore_from_GO_term_list(GO_term_file, count_file,
                     subset2_filename = a + '_' + b +'_' + filename + '.csv'
                     sub2_finalDF.to_csv(subset2_filename)
 
-def count_DEGs(DEG_file, LFC_suffix='_log2FC', padj_suffix='_padj', 
+def count_DEGs(DEG_file, sheet_name=None, LFC_suffix='_log2FC', padj_suffix='_padj', 
                L2FC_threshold=1, adjP_threshold=0.05):
     if 'xlsx' in DEG_file:
-        DEGs = pd.read_excel(DEG_file)
+        if sheet_name is None:
+            DEGs = pd.read_excel(DEG_file)
+        else:
+            DEGs = pd.read_excel(DEG_file, sheet_name=sheet_name)
     elif 'csv' in DEG_file:
         DEGs = pd.read_csv(DEG_file)
     samps = [c for c in DEGs.columns if LFC_suffix in c]
@@ -1086,6 +1089,7 @@ def count_DEGs(DEG_file, LFC_suffix='_log2FC', padj_suffix='_padj',
     for i in samps:
         cols = [c for c in DEGs.columns if i in c]
         samp_DEG = DEGs[cols]
+        samp_DEG= samp_DEG.replace(r'^\s*$', np.nan, regex=True)
         lfc_col = [c for c in samp_DEG.columns if LFC_suffix in c][0]
         adjP_col =[c for c in samp_DEG.columns if padj_suffix in c][0]
         samp_DEG = samp_DEG[samp_DEG[adjP_col] <  pval_thresh]
